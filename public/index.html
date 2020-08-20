@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,12 +16,22 @@
       name="description"
       content="Web site created using create-react-app"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link
+      rel="stylesheet"
+      href="//baltimorecountymd.gov/sebin/l/v/red-inside.css?v=2017.02.27"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="//www.baltimorecountymd.gov/sebin/h/f/inside-responsive.css"
+      type="text/css"
+    />
+
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -39,5 +56,31 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <div class="container">
+      <div class="row">
+        <!-- <div class="col-md-6">
+          <form method="post" action="#" id="#">
+            <div class="form-group files">
+              <label>Upload Your File </label>
+              <input
+                type="file"
+                class="form-control"
+                multiple=""
+                onChange="{this.onChangeHandler}"
+              />
+            </div>
+          </form> -->
+        </div>
+        <!-- <div class="col-md-6">
+          <form method="post" action="#" id="#">
+            <div class="form-group files color">
+              <label>Upload Your File </label>
+              <input type="file" class="form-control" multiple="" />
+            </div>
+          </form>
+        </div> -->
+      </div>
+    </div>
   </body>
 </html>
