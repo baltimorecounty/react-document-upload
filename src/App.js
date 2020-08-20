@@ -116,15 +116,15 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group files">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-6">
+              <div className="form-group files">
                 <label>Upload Your File </label>
                 <input
                   id="multifile"
                   type="file"
-                  class="form-control"
+                  className="form-control"
                   multiple
                   onChange={this.onChangeHandler}
                 />
@@ -132,7 +132,7 @@ class App extends Component {
             </div>
           </div>
         </div>
-        <div class="form-group">
+        <div className="form-group">
           <ToastContainer />
         </div>
 
