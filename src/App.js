@@ -136,12 +136,6 @@ class App extends Component {
           <ToastContainer />
         </div>
 
-
-        {/* <div class="form-group">
-          <Progress max="100" color="success" value={this.state.loaded}>
-            {Math.round(this.state.loaded, 2)}%
-          </Progress>
-        </div> */}
         <input
           type="button"
           value="Upload"
