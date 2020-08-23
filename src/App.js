@@ -1,38 +1,32 @@
-import React, { Component } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import { Progress } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedFile: null,
-      loaded: 0,
-      uploaded: 0
-    };
-  }
+const App = props => {
+  const [selectedFile, setselectedFile] = useState(null);
 
-  maxSelectFile = event => {
-    let files = event.target.files; // create file object
+  const maxSelectFile = files => {
     if (files.length > 3) {
       const msg = "Only 3 images can be uploaded at a time";
-      event.target.value = null; // discard selected file
-     // console.log(msg);
+      document.getElementById("multifile").value = ""; // discard selected file
       toast.warning(msg);
       return false;
     }
     return true;
   };
 
-  checkMimeType = event => {
-    //getting file object
-    let files = event.target.files;
-    //define message container
+  const checkMimeType = files => {
     let err = "";
     // list allow mime type
     const types = ["image/png", "image/jpeg", "image/gif", "application/pdf"];
+
+    // if (types.every(type => files.forEach(e => e.type !== type))) {
+    //   // create error message and assign to container
+    //   console.log("type does not match");
+    //   err += e => e.type + " is not a supported format\n";
+    // }
     // loop access array
     for (var x = 0; x < files.length; x++) {
       // compare file type find doesn't matach
@@ -44,107 +38,142 @@ class App extends Component {
 
     if (err !== "") {
       // if message not same old that mean has error
-      event.target.value = null; // discard selected file
+      document.getElementById("multifile").value = ""; // discard selected file
       toast.error(err);
       return false;
     }
     return true;
   };
+  const onChangeHandler = files => {
 
-  checkFileSize = event => {
-    let files = event.target.files;
-    let size = 15000;
-    let err = "";
-    for (var x = 0; x < files.length; x++) {
-      if (files[x].size > size) {
-        err += files[x].type + "is too large, please pick a smaller file\n";
+    if (maxSelectFile(files) && checkMimeType(files)) {
+      removeElement("gallery");
+
+      // files.forEach(previewFile);
+      for (var x = 0; x < files.length; x++) {
+        previewFile(files[x]);
       }
+      setselectedFile(files);
     }
-    if (err !== "") {
-      event.target.value = null;
-      console.log(err);
-      return false;
-    }
+  };
 
-    return true;
+  useEffect(() => {
+    let dropArea = document.getElementById("drop-area");
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+    ["dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    //Handle dropped files
+    dropArea.addEventListener("drop", handleDrop, false);
+  }, ["dragenter", "dragover", "dragleave", "drop"]);
+
+  const preventDefaults = e => {
+    e.preventDefault();
+    e.stopPropagation();
   };
-  onChangeHandler = event => {
-    var files = event.target.files;
-    if (this.maxSelectFile(event) && this.checkMimeType(event)) {
-      // && this.checkMimeType(event)){
-      // &&    this.checkMimeType(event){}
-      // if return true allow to setState
-      this.setState({
-        selectedFile: files
-      });
-    }
-    //  console.log(files);
+  const highlight = e => {
+    document.getElementById("drop-area").classList.add("highlight");
   };
-  onClickHandler = () => {
-    if (this.state.selectedFile !== null) {
+
+  const unhighlight = e => {
+    document.getElementById("drop-area").classList.remove("active");
+  };
+
+  const handleDrop = event => {
+    event.preventDefault();
+    onChangeHandler(event.dataTransfer.files);
+  };
+  const previewFile = file => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function() {
+      let img = document.createElement("img");
+      img.src = reader.result;
+      document.getElementById("gallery").appendChild(img);
+    };
+  };
+  const removeElement = elementId => {
+    var element = document.getElementById(elementId);
+    element.innerHTML = "";
+    setselectedFile(null);
+  };
+
+  const onClickClear = () => {
+    setselectedFile(null);
+    removeElement("gallery");
+    document.getElementById("multifile").value = "";
+  };
+
+  const onClickHandler = () => {
+    if (selectedFile !== null) {
       const data = new FormData();
-      for (var x = 0; x < this.state.selectedFile.length; x++) {
-        data.append("files", this.state.selectedFile[x]);
+      for (var x = 0; x < selectedFile.length; x++) {
+        data.append("files", selectedFile[x]);
       }
 
       axios
-        .post("https://localhost:44363/api/FileUpload", data, {
-          onUploadProgress: ProgressEvent => {
-            this.setState({
-              loaded: (ProgressEvent.loaded / ProgressEvent.total) * 100
-            });
-          }
-        })
+        .post(
+          "https://localhost:44393/api/FileUpload",
+          data
+          // , {
+          //   onUploadProgress: ProgressEvent => {
+          //     this.setState({
+          //       loaded: (ProgressEvent.loaded / ProgressEvent.total) * 100
+          //     });
+          //   }
+          // }
+        )
         .then(res => {
           // then print response status
           toast.success("upload success");
-
-          this.setState({
-            selectedFile: null,
-            loaded: 0
-          });
+          onClickClear();
         })
         .catch(err => {
           toast.error("upload fail");
         });
-      // Clear percentage
-      //  setTimeout(() => this.setState({ loaded: 0 }), 10000);
-      document.getElementById("multifile").value = "";
     }
   };
 
-  render() {
-    return (
-      <div className="App">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <div className="form-group files">
-                <label>Upload Your File </label>
-                <input
-                  id="multifile"
-                  type="file"
-                  className="form-control"
-                  multiple
-                  onChange={this.onChangeHandler}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+  //console.log(selectedFile);
+  return (
+    <div id="drop-area">
+      <form class="my-form">
+        <input
+          id="multifile"
+          type="file"
+          multiple
+          onChange={e => onChangeHandler(e.target.files)}
+        />
+        <label class="button" for="multifile">
+          Select some files
+        </label>
+
         <div className="form-group">
           <ToastContainer />
         </div>
+      </form>
+      <div id="gallery"></div>
+      <input
+        type="button"
+        value="Upload"
+        class="btn btn-success btn-block"
+        onClick={onClickHandler}
+      />
 
-        <input
-          type="button"
-          value="Upload"
-          class="btn btn-success btn-block"
-          onClick={this.onClickHandler}
-        />
-      </div>
-    );
-  }
-}
-
+      <input
+        type="button"
+        value="Clear"
+        class="btn btn-warning btn-block"
+        onClick={onClickClear}
+      />
+    </div>
+  );
+};
 export default App;
